@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Homework 1</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="three.js"></script>
+    <script src="Detector.js"></script>
+    <script src="OrbitControls.js"></script>
+    <script src="OBJLoader.js"></script>
+
+   
+</head>
+
+<body>
+
+    <script>
+
+        var container,cam, scene, loader,obj,lighting, ambient, tLight, bLight,controls;
+
+        init();
+        animate();
+
+        function init() {
+
+            container = document.createElement('div');
+            document.body.appendChild(container);
+
+            // Camera
+
+            cam = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+            cam.position.z = 3;
+
+            // Scene 
+
+            scene = new THREE.Scene();
+            lighting = false;
+
+            ambient = new THREE.AmbientLight(0xffffff);
+            scene.add(ambient);
+
+            tLight = new THREE.DirectionalLight(0xe5e5e5/*00ff00*/);
+            tLight.position.set(100, 0, 100);
+
+            bLight = new THREE.DirectionalLight(0xcccccc/*0000ff*/);
+            bLight.position.set(100, 0, -100).normalize();
+
+            // Model 
+                var objLoader = new THREE.OBJLoader();
+              //  objLoader.load('hand.obj', function (object) {
+                objLoader.load('eight.obj', function (object) {
+                    obj = object;  
+
+            var material = new THREE.MeshLambertMaterial( { color: 0x666666 } );
+
+                 object.traverse( function ( child ) {
+
+                 if ( child instanceof THREE.Mesh ) {
+
+                      child.material = material;
+
+                 }
+
+             } );
+                    scene.add(object);
+                });
+              // Loader 
+
+            loader = new THREE.WebGLRenderer();
+            loader.setPixelRatio(window.devicePixelRatio);
+            loader.setSize(window.innerWidth, window.innerHeight);
+            loader.setClearColor(new THREE.Color("hsl(0, 0%, 10%)"));
+            container.appendChild(loader.domElement);
+
+            // Controls 
+
+            controls = new THREE.OrbitControls(cam, loader.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.25;
+            controls.enableZoom = true;
+
+            // Lighting
+
+            lighting = !lighting;
+            ambient.intensity = 0.25;        
+            scene.add(tLight);
+            scene.add(bLight);
+            // obj.scale.set(1,1,1);
+            }
+    
+        function animate() {
+
+            requestAnimationFrame(animate);
+
+            controls.update();
+
+            render();
+
+        }
+
+        function render() {
+
+            loader.render(scene, cam);
+
+        }
+
+    </script>
+
+</body>
+</html>
